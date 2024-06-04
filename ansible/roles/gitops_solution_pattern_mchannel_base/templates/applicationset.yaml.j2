@@ -1,0 +1,57 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ applicationset_name }}
+  namespace: {{ applicationset_namespace }}
+spec:
+  generators:
+  - list:
+      elements:
+      - user: ""
+  template:
+    metadata:
+      name: "{{ argo_application_name }}-base"
+      namespace: {{ applicationset_namespace }}
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      destination:
+        name: ""
+        namespace: "{{ argo_application_namespace_prefix }}-base"
+        server: 'https://kubernetes.default.svc'
+      project: default
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: false
+      source:
+        repoURL: {{ application_repo }}
+        targetRevision: {{ application_repo_tag }}
+        path: {{ application_repo_path_gitops }}
+        helm:
+          values: |
+            name: {{ argo_application_name }}-base
+
+            namespace: "{{ namespace_prefix }}-gitops-base"
+ 
+            applicationSet:
+              resources:
+                requests:
+                  cpu: 100m
+            controller:
+              resources:
+                requests:
+                  cpu: 100m
+            dex:
+              resources:
+                requests:
+                  cpu: 100m
+            repo:
+              resources:
+                requests:
+                  cpu: 100m
+            server:
+              resources:
+                requests:
+                  cpu: 125m

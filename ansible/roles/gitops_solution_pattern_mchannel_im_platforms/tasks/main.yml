@@ -1,0 +1,66 @@
+---
+
+- name: Create application namespace
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+
+- name: "Give argocd serviceaccounts access to projects"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'rolebinding-argo.yaml.j2') }}"
+  vars:
+    r_bindings_argo:
+      - namespace: "{{ im_platforms_namespace }}"
+        role: "admin"
+  retries: 10
+  delay: 30
+
+- name: "Give serviceaccounts access to projects"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'rolebinding.yaml.j2') }}"
+
+- name: Get ingress domain
+  kubernetes.core.k8s_info:
+    kind: IngressController
+    name: default
+    namespace: openshift-ingress-operator
+    api_version: operator.openshift.io/v1
+  register: r_openshift_ingress_controller
+
+- name: Set openshift domain
+  ansible.builtin.set_fact:
+    r_openshift_subdomain: "{{ r_openshift_ingress_controller.resources[0].status.domain }}"
+    
+    
+- name: Deploy application
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'application.yaml.j2') | from_yaml }}"
+
+- name: "Wait until Secret for Matrix is available."
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: "{{ im_platforms_namespace }}"
+    name: matrix-synapse-token
+  register: r_secret_matrix
+  retries: 100
+  delay: 10
+  until:
+   - r_secret_matrix.resources is defined
+   - r_secret_matrix.resources | length | int > 0
+
+- name: "Wait until Secret for Kafka is available."
+  k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: "{{ mw_namespace }}"
+    name: kafka-client-secret
+  register: r_secret_kafka
+  retries: 100
+  delay: 10
+  until:
+   - r_secret_kafka.resources is defined
+   - r_secret_kafka.resources | length | int > 0

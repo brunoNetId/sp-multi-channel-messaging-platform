@@ -1,0 +1,46 @@
+---
+
+# - name: "Install Red Hat Web Terminal Operator"
+#   ansible.builtin.import_role:
+#     name: operator_web-terminal
+
+- name: "Install Red Hat Build of Keycloak Operator"
+  ansible.builtin.import_role:
+    name: operator_rhbk
+
+- name: "Install AMQ Streams operator"
+  ansible.builtin.import_role:
+    name: operator_amq_streams
+
+- name: "Install AMQ operator"
+  ansible.builtin.import_role:
+    name: operator_amq
+
+- name: "Install Datagrid operator"
+  ansible.builtin.import_role:
+    name: operator_datagrid
+
+- name: "Install Camel K operator"
+  ansible.builtin.import_role:
+    name: operator_camelk
+
+- name: "Install OpenShift Gitops"
+  ansible.builtin.import_role:
+    name: operator_gitops
+
+- name: "Install Red Hat Build of Keycloak"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_rhbk
+
+- name: "Install Globex Resources"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_base
+
+- name: "Install Solution Pattern Multi-Channel (IM platforms)"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_im_platforms
+
+- name: "Install Solution Pattern Multi-Channel (Integrations)"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_integrations
+

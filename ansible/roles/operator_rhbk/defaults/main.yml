@@ -1,0 +1,15 @@
+---
+
+operator_rhbk_name: rhbk-operator
+operator_rhbk_namespace: rhsso
+operator_rhbk_channel: ""
+operator_rhbk_automatic_install_plan_approval: true
+operator_rhbk_starting_csv: ""
+operator_rhbk_catalog: redhat-operators
+operator_rhbk_csv_prefix: rhbk-operator
+operator_rhbk_wait_for_deploy: true
+operator_rhbk_use_catalog_snapshot: false
+operator_rhbk_catalogsource_name: ""
+operator_rhbk_catalogsource_namespace: rhsso
+operator_rhbk_catalog_snapshot_image: ""
+operator_rhbk_catalog_snapshot_image_tag: ""

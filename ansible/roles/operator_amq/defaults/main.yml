@@ -1,0 +1,16 @@
+---
+
+amq_broker_operator_channel: "7.11.x"
+amq_broker_operator_automatic_install_plan_approval: true
+amq_broker_operator_starting_csv: ""
+amq_broker_operator_name: amq-broker-rhel8
+amq_broker_operator_namespace: openshift-operators
+amq_broker_operator_catalog: redhat-operators
+amq_broker_operator_csv_prefix: amq-broker-operator
+amq_broker_operator_wait_for_deploy: true
+amq_broker_operator_use_catalog_snapshot: false
+amq_broker_operator_catalogsource_name: ""
+amq_broker_operator_catalogsource_namespace: openshift-operators
+amq_broker_operator_catalog_snapshot_image: ""
+amq_broker_operator_catalog_snapshot_image_tag: ""
+

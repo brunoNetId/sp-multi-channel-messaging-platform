@@ -1,0 +1,10 @@
+# ------------------------------------------------
+# Chat users
+# ------------------------------------------------
+rocket_users: 5
+matrix_users: 5
+
+rhkc_realm_prefix: user
+rhkc_realm_count: 1
+
+im_platforms_namespace: globex-im-platforms

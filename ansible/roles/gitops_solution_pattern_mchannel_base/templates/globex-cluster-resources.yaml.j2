@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ globex_application_name }}-cluster-resources
+  namespace: {{ applicationset_namespace }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  destination:
+    name: ""
+    server: 'https://kubernetes.default.svc'
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  source:
+    repoURL: {{ application_repo }}
+    targetRevision: {{ application_repo_tag }}
+    path: {{ application_repo_path_globex }}/globex-mw/streams-console
+    helm:
+      values: |
+
+  
+        scope:
+          namespace: false
+        namespace: {{ r_globex_mw_namespace }}
+

@@ -1,0 +1,62 @@
+---
+
+# OCP4 Authentication:
+ocp4_workload_authentication_htpasswd_user_password: openshift
+ocp4_workload_authentication_htpasswd_user_base: user
+ocp4_workload_authentication_htpasswd_user_count: 1
+
+# Shared Users
+ocp4_workload_user_count: "{{ ocp4_workload_authentication_htpasswd_user_count }}"
+ocp4_workload_user_prefix: "{{ ocp4_workload_authentication_htpasswd_user_base }}"
+
+
+# ------------------------------------------------
+# Workshop
+# ------------------------------------------------
+
+# Namespaces
+namespace_prefix: globex
+
+# ApplicationSet
+applicationset_name: globex-gitops
+applicationset_namespace: openshift-gitops
+
+argo_application_name: globex-gitops
+argo_application_namespace_prefix: "{{ namespace_prefix }}-gitops"
+argo_application_namespace: >-
+  {{ argo_application_namespace_prefix }}-user
+
+globex_application_name: globex
+
+application_repo: https://github.com/rh-cloud-architecture-workshop/helm.git
+application_repo_tag: main
+application_repo_path_gitops: globex-gitops/common
+application_repo_path_globex: globex
+
+kafka_security_protocol: SASL_PLAINTEXT
+kafka_sasl_mechanism: SCRAM-SHA-512
+kafka_client_id: globex
+kafka_client_secret: globex
+
+globex_user_password: openshift
+
+
+# ------------------------------------------------
+# Middleware module
+# ------------------------------------------------
+mw_namespace: "{{globex_application_name}}-mw"
+
+# ------------------------------------------------
+# Camel module common
+# ------------------------------------------------
+
+im_platforms_application_namespace: openshift-gitops
+im_platforms_application_name: globex-im-platforms
+# im_platforms_namespace: globex-im-platforms
+im_platforms_gitops_repo: https://github.com/rh-cloud-architecture-workshop/helm.git
+im_platforms_gitops_repo_tag: main
+im_platforms_gitops_repo_path: globex-camel-common
+
+im_platforms_synapse_matrix_host: matrix-synapse
+im_platforms_rocketchat_host: rocketchat
+im_platforms_element_host: element

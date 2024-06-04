@@ -1,0 +1,87 @@
+---
+
+# - name: Build variable users
+#   ansible.builtin.set_fact:
+#     r_users: |
+#        {{ r_users | default([]) + [ocp4_workload_user_prefix + item | string] }}
+#   loop: "{{ range(1, ((ocp4_workload_user_count | int) + 1)) | list }}"
+
+- name: Get ingress domain
+  kubernetes.core.k8s_info:
+    kind: IngressController
+    name: default
+    namespace: openshift-ingress-operator
+    api_version: operator.openshift.io/v1
+  register: r_openshift_ingress_controller
+
+- name: Set openshift domain
+  ansible.builtin.set_fact:
+    r_openshift_subdomain: "{{ r_openshift_ingress_controller.resources[0].status.domain }}"
+
+- name: Undeploy Globex application
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'globex-application.yaml.j2') }}"
+  vars:
+    r_globex_namespace: "{{ namespace_prefix }}"
+    r_globex_mw_namespace: "{{ namespace_prefix }}-mw"
+
+
+# - name: "Wait until Globex application DEBUG"
+#   k8s_info:
+#     api_version: argoproj.io/v1alpha1
+#     kind: Application
+#     namespace: "globex-gitops-user1"
+#     name: "{{ globex_application_name }}"
+#   register: r_globex_application1
+
+# - name: Print Globex Application
+#   ansible.builtin.debug:
+#     msg: "Setting up showroom in namespace {{ r_globex_application1 }}"
+
+- name: "Wait until Globex application has been fully deleted"
+  k8s_info:
+    api_version: argoproj.io/v1alpha1
+    kind: Application
+    namespace: "{{ argo_application_namespace }}"
+    name: "{{ globex_application_name }}"
+  register: r_globex_application
+  retries: 100
+  delay: 10
+  until:
+   - r_globex_application.resources is defined
+   - r_globex_application.resources | length | int == 0
+
+
+- name: Undeploy Globex cluster wide resources
+  kubernetes.core.k8s:
+    state: absent
+    definition: "{{ lookup('template', 'globex-cluster-resources.yaml.j2') }}"
+  vars:
+    r_globex_namespace: "{{ namespace_prefix }}"
+    r_globex_mw_namespace: "{{ namespace_prefix }}-mw"
+
+
+- name: Remove applicationset
+  kubernetes.core.k8s:
+    state: absent
+    api_version: argoproj.io/v1alpha1
+    kind: ApplicationSet
+    name: "{{ applicationset_name }}"
+    namespace: "{{ applicationset_namespace }}"
+    wait: true
+
+- name: "Delete user namespaces"
+  kubernetes.core.k8s:
+    state: absent
+    resource_definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+  vars:
+    r_namespaces:
+      - name: "{{ namespace_prefix }}"
+        managedByArgo: "{{ argo_application_namespace }}"
+      - name: "{{ namespace_prefix }}-mw"
+        managedByArgo: "{{ argo_application_namespace }}"
+      - name: "{{ argo_application_namespace }}"
+        managedByArgo: ""
+  retries: 10
+  delay: 30

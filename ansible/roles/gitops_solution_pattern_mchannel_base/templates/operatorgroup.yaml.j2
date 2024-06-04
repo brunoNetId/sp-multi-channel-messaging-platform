@@ -1,0 +1,11 @@
+{% for __namespace in r_operatorgroup_namespaces %}
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: "{{ __namespace.name }}-og"
+  namespace: "{{ __namespace.name }}"
+spec:
+  targetNamespaces:
+    - {{ __namespace.name }}
+{% endfor %}

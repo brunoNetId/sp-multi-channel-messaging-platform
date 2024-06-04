@@ -1,0 +1,18 @@
+---
+
+operator_rhbk_namespace: rhsso
+
+rhbk_application_namespace: openshift-gitops
+rhbk_application_name: rhbk
+rhbk_namespace: "{{ operator_rhbk_namespace }}"
+rhbk_gitops_repo: https://github.com/rh-cloud-architecture-workshop/helm.git
+rhbk_gitops_repo_tag: main
+rhbk_gitops_repo_path: globex-keycloak
+
+rhbk_cr_name: rhbk
+rhbk_external_access: false
+rhbk_host: sso
+rhbk_max_time_to_wait: 600000
+
+rhbk_realm: globex
+rhbk_web_gateway_client: globex-web-gateway

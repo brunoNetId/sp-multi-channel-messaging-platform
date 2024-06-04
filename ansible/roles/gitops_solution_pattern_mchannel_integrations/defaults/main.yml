@@ -1,0 +1,70 @@
+---
+
+# OCP4 Authentication:
+ocp4_workload_authentication_htpasswd_user_password: openshift
+ocp4_workload_authentication_htpasswd_user_base: user
+ocp4_workload_authentication_htpasswd_user_count: 1
+
+# Shared Users
+ocp4_workload_user_count: "{{ ocp4_workload_authentication_htpasswd_user_count }}"
+ocp4_workload_user_prefix: "{{ ocp4_workload_authentication_htpasswd_user_base }}"
+
+
+# ------------------------------------------------
+# Red Hat Build of Keycloack
+# ------------------------------------------------
+
+rhbk_host: sso
+rhbk_realm: globex
+rhbk_web_gateway_client: globex-web-gateway
+
+
+# ------------------------------------------------
+# Workshop
+# ------------------------------------------------
+# matrix_users: 2
+
+
+# Namespaces
+namespace_prefix: globex
+
+# ApplicationSet
+applicationset_name: globex-gitops
+applicationset_namespace: openshift-gitops
+
+argo_application_name: globex-gitops
+argo_application_namespace_prefix: "{{ namespace_prefix }}-gitops"
+argo_application_namespace: >-
+  {{ argo_application_namespace_prefix }}-user
+
+globex_application_name: globex
+
+application_repo: https://github.com/rh-cloud-architecture-workshop/helm.git
+application_repo_tag: main
+application_repo_path_gitops: globex-gitops/common
+application_repo_path_globex: globex
+
+kafka_security_protocol: SASL_PLAINTEXT
+kafka_sasl_mechanism: SCRAM-SHA-512
+kafka_client_id: globex
+kafka_client_secret: globex
+
+globex_user_password: openshift
+
+
+
+# ------------------------------------------------
+# Camel module
+# ------------------------------------------------
+
+integrations_application_namespace: openshift-gitops
+integrations_application_name: camel-integration
+integrations_namespace: globex-integrations
+# integrations_namespace: globex-camel
+integrations_gitops_repo: https://github.com/rh-cloud-architecture-workshop/helm.git
+integrations_gitops_repo_tag: main
+integrations_gitops_repo_path: globex-camel
+
+integrations_synapse_matrix_host: matrix-synapse
+integrations_rocketchat_host: rocketchat
+integrations_element_host: element

@@ -1,0 +1,15 @@
+---
+
+operator_camelk_name: red-hat-camel-k
+operator_camelk_namespace: openshift-operators
+operator_camelk_channel: "1.10.x"
+operator_camelk_csv_prefix: red-hat-camel-k
+operator_camelk_catalog: redhat-operators
+operator_camelk_automatic_install_plan_approval: true
+operator_camelk_starting_csv: ""
+operator_camelk_wait_for_deploy: true
+operator_camelk_use_catalog_snapshot: false
+operator_camelk_catalogsource_name: ""
+operator_camelk_catalogsource_namespace: openshift-operators
+operator_camelk_catalog_snapshot_image: ""
+operator_camelk_catalog_snapshot_image_tag: ""

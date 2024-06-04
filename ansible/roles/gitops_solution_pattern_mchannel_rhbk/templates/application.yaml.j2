@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ rhbk_application_name }}
+  namespace: {{ rhbk_application_namespace }}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  destination:
+    name: ""
+    namespace: {{ rhbk_namespace }}
+    server: 'https://kubernetes.default.svc'
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+  source:
+    repoURL: {{ rhbk_gitops_repo }}
+    targetRevision: {{ rhbk_gitops_repo_tag }}
+    path: {{ rhbk_gitops_repo_path }}
+    helm:
+      values: |
+
+        keycloak:
+          nameOverride: {{ rhbk_cr_name }}
+
+          route:
+            host: {{ rhbk_host }}.{{ r_openshift_subdomain }}
+
+          ingress:
+            enabled: {{ rhbk_external_access }}
+        
+        keycloak-realm-import:
+          loop:
+            prefix: {{ rhkc_realm_prefix }}
+            count: {{ rhkc_realm_count }}
+
+          realm:
+            name: {{ rhbk_realm }}
+
+          client:
+            gateway: {{ rhbk_web_gateway_client }}
+
+          keycloak:
+            name: {{ rhbk_cr_name }}
+
+          hook:
+            maxTimeToWait: {{ rhbk_max_time_to_wait }}
+
+        keycloak-db:
+          selector:
+            app: {{ rhbk_cr_name }}

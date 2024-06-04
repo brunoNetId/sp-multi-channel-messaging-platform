@@ -1,0 +1,5 @@
+*.retry
+.idea
+work
+**/inventories/inventory
+**/inventories/inventory-*

@@ -1,0 +1,52 @@
+---
+
+- name: "Uninstall Solution Pattern Multi-Channel (Integrations)"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_integrations
+    tasks_from: uninstall
+
+- name: "Uninstall Solution Pattern Multi-Channel (IM platforms)"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_im_platforms
+    tasks_from: uninstall
+
+- name: "Uninstall Globex Resources"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_base
+    tasks_from: uninstall
+
+- name: "Uninstall Red Hat Build of Keycloak"
+  ansible.builtin.import_role:
+    name: gitops_solution_pattern_mchannel_rhbk
+    tasks_from: uninstall
+
+- name: "Uninstall OpenShift Gitops"
+  ansible.builtin.import_role:
+    name: operator_gitops
+    tasks_from: uninstall
+
+- name: "Uninstall Camel K operator"
+  ansible.builtin.import_role:
+    name: operator_camelk
+    tasks_from: uninstall
+
+- name: "Uninstall AMQ operator"
+  ansible.builtin.import_role:
+    name: operator_amq
+    tasks_from: uninstall
+
+- name: "Uninstall Datagrid operator"
+  ansible.builtin.import_role:
+    name: operator_datagrid
+    tasks_from: uninstall
+
+- name: "Uninstall Red Hat Build of Keycloak Operator"
+  ansible.builtin.import_role:
+    name: operator_rhbk
+    tasks_from: uninstall
+
+- name: "Uninstall AMQ Streams operator"
+  ansible.builtin.import_role:
+    name: operator_amq_streams
+    tasks_from: uninstall
+

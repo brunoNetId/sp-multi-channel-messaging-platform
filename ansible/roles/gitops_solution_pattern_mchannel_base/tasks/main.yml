@@ -1,0 +1,94 @@
+---
+
+- name: Create usernames
+  ansible.builtin.set_fact:
+    r_users: |
+       {{ r_users | default([]) + [ocp4_workload_user_prefix + item | string] }}
+  loop: "{{ range(1, ((ocp4_workload_user_count | int) + 1)) | list }}"
+
+
+- name: "Create user namespaces"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+  vars:
+    r_namespaces:
+      - name: "{{ namespace_prefix }}"
+        managedByArgo: "{{ argo_application_namespace }}"
+      - name: "{{ namespace_prefix }}-mw"
+        managedByArgo: "{{ argo_application_namespace }}"
+      - name: "{{ argo_application_namespace }}"
+        managedByArgo: ""
+  retries: 10
+  delay: 30
+
+- name: "Give users access to projects"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'rolebinding.yaml.j2') }}"
+  vars:
+    r_bindings:
+      - namespace: "{{ namespace_prefix }}"
+        role: "admin"
+      - namespace: "{{ namespace_prefix }}-mw"
+        role: "admin"
+      - namespace: "{{ argo_application_namespace }}"
+        role: "admin"
+  retries: 10
+  delay: 30
+
+- name: Deploy applicationset
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'applicationset.yaml.j2') | from_yaml }}"
+
+- name: "Give argocd serviceaccounts access to projects"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'rolebinding-argo.yaml.j2') }}"
+  vars:
+    r_bindings_argo:
+      - namespace: "{{ namespace_prefix }}"
+        role: "admin"
+      - namespace: "{{ namespace_prefix }}-mw"
+        role: "admin"
+  retries: 10
+  delay: 30
+
+- name: Deploy operatorgroup
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'operatorgroup.yaml.j2') }}"
+  vars:
+    r_operatorgroup_namespaces:
+      - name: "{{ namespace_prefix }}-mw"
+  retries: 10
+  delay: 30
+
+- name: Deploy Globex cluster wide resources
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'globex-cluster-resources.yaml.j2') }}"
+  vars:
+    r_globex_namespace: "{{ namespace_prefix }}"
+    r_globex_mw_namespace: "{{ namespace_prefix }}-mw"
+
+- name: Get ingress domain
+  kubernetes.core.k8s_info:
+    kind: IngressController
+    name: default
+    namespace: openshift-ingress-operator
+    api_version: operator.openshift.io/v1
+  register: r_openshift_ingress_controller
+
+- name: Set openshift domain
+  ansible.builtin.set_fact:
+    r_openshift_subdomain: "{{ r_openshift_ingress_controller.resources[0].status.domain }}"
+
+- name: Deploy Globex application
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'globex-application.yaml.j2') }}"
+  vars:
+    r_globex_namespace: "{{ namespace_prefix }}"
+    r_globex_mw_namespace: "{{ namespace_prefix }}-mw"

@@ -1,0 +1,91 @@
+---
+
+- name: Create application namespace
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'namespace.yaml.j2') }}"
+
+- name: "Give access to Camel Common project"
+  kubernetes.core.k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'rolebinding.yaml.j2') }}"
+  vars:
+    r_bindings:
+      - namespace: "{{ integrations_namespace }}"
+        role: "admin"
+  retries: 10
+  delay: 30
+
+- name: Get ingress domain
+  kubernetes.core.k8s_info:
+    kind: IngressController
+    name: default
+    namespace: openshift-ingress-operator
+    api_version: operator.openshift.io/v1
+  register: r_openshift_ingress_controller
+
+- name: Set openshift domain
+  ansible.builtin.set_fact:
+    r_openshift_subdomain: "{{ r_openshift_ingress_controller.resources[0].status.domain }}"
+    
+    
+- name: Deploy application
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'application.yaml.j2') | from_yaml }}"
+
+
+# - name: Retrieve Matrix Admin token from {{ im_platforms_namespace }}
+#   set_fact:
+#     matrix_admin_token: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name='matrix-synapse-token', namespace='{{ im_platforms_namespace }}') | json_query('[0].data') }}"
+
+- name: Retrieve Matrix Admin token from {{ im_platforms_namespace }}
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: matrix-synapse-token
+    namespace: "{{ im_platforms_namespace }}"
+    # api_version: operator.openshift.io/v1
+  register: matrix_admin_token
+
+- name: Extract Secret data
+  set_fact:
+    matrix_admin_token: "{{ matrix_admin_token | json_query('resources[0].data')}}"
+
+
+# - name: debug
+#   debug:
+#     msg: "matrix_admin_token = {{ matrix_admin_token | json_query('resources[0].data')}}"
+
+
+- name: debug
+  debug:
+    msg: "matrix_admin_token = {{ matrix_admin_token.access_token | b64decode }}"
+
+- name: Create Matrix Secret
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'integration-secret.yaml.j2') | from_yaml }}"
+
+# HELM's Chart definition for this integration seems broken
+# We deploy this definition instead    
+- name: Deploy Camel Matrix JSLT
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'configmap-jslt.yaml.j2') | from_yaml }}"
+
+- name: Create Matrix agent invites
+  ansible.builtin.set_fact:
+    matrix_invites: |
+       {{ matrix_invites | default([]) + ["@user" + (item | string) + ":globex"] }}
+  loop: "{{ range(1, ((matrix_users | int) + 1)) | list }}"
+
+- name: debug invites
+  debug:
+    msg: invite list = {{ matrix_invites | replace("'",'"') }}
+
+# HELM's Chart definition for this integration seems broken
+# We deploy this definition instead    
+- name: Deploy Camel Matrix Integration
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'integration.yaml.j2') | from_yaml }}"
