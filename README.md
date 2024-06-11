@@ -1,10 +1,12 @@
-# Solution Pattern: Event-Driven Multi-Channel Support Service
+# Solution Pattern: Build an extendable Multi-Channel Messaging Platform
 
-Any organisation nowadays generally has a support team to attend customer queries or/and resolve problems. In an effort to get closer to the customer, companies could offer a variety of channels for users to choose from when contacting the Support team. For example, a customer enquiring about a certain product, could do so by using the official portal's chat window, or via a dedicated App from their handsets, or by using an Instant Message application such as WhatsApp.
+This repository contains an implementation demo of the Solution Pattern.
 
-The Multi-Channel Support Service is a platform that allows customers to choose between different channels to contact the support team. The platform has a pluggable architecture that allows new channels to be added in.
+The Solution Pattern proposes a platform that unifies multiple messaging/collaboration systems to address the problem of communication fragmentation where teams and groups, inside and outside large organisations, are affected by communication inefficiencies. 
 
-This solution pattern showcases the implementation of a multi-channel support service for Globex (a fictitious company) customers that will enable clients to chat in real time with a team of agents.
+The unified platform, integrates all systems to behave as one providing new collaboration possibilities and capabilities. The platform has a pluggable architecture that allows new channels to be added in.
+
+This demo showcases the implementation of a multi-channel support service for Globex (a fictitious company) customers that enables clients to chat in real time with support teams.
 
 
 ## Home page
