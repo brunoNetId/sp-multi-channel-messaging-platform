@@ -60,13 +60,13 @@ The instructions below assume:
 1. Clone this GitHub repository:
 
     ```sh
-    git clone https://github.com/brunoNetId/sp-multi-channel-support-service.git
+    git clone https://github.com/brunoNetId/sp-multi-channel-messaging-platform.git
     ```
 
 1. Change to root directory of the project.
 
     ```sh
-    cd sp-multi-channel-support-service
+    cd sp-multi-channel-messaging-platform
     ```
 
     <br/>
