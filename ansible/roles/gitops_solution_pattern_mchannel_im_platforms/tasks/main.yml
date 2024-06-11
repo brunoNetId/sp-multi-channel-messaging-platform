@@ -64,3 +64,19 @@
   until:
    - r_secret_kafka.resources is defined
    - r_secret_kafka.resources | length | int > 0
+
+- name: Create Rocket.Chat visual connector.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n globex-im-platforms annotate deployment rocketchat app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"mongodb-rocketchat"}]'
+
+- name: Create Camel visual connectors.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n globex-im-platforms annotate integration rocketchat-integration app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"broker-ss"},{"apiVersion":"apps/v1","kind":"Deployment","name":"rocketchat"}]'
+
+- name: Create Element to Matrix connector.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n globex-im-platforms annotate deployment element app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"matrix-synapse"}]'
+

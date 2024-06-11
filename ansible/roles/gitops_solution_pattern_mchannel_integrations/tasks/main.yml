@@ -89,3 +89,51 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'integration.yaml.j2') | from_yaml }}"
+
+
+- name: Create Globex Web visual connector.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n {{ integrations_namespace }} annotate deployment globex-web app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"globex-support"}]'
+
+- name: "Wait until Integration Transcript exists"
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    namespace: "{{ integrations_namespace }}"
+    name: transcript
+  register: r_transcript
+  retries: 100
+  delay: 10
+  until:
+   - r_transcript is defined
+   # - r_secret_kafka.resources | length | int > 0
+
+- name: Create Camel Transcript visual connectors.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n {{ integrations_namespace }} annotate deployment transcript app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"minio"}]'
+
+- name: "Wait until Camel Matrix exists"
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    namespace: "{{ integrations_namespace }}"
+    name: matrix
+  register: r_matrix
+  retries: 100
+  delay: 10
+  until:
+   - r_matrix is defined
+
+- name: Create Camel Matrix visual connectors.
+  shell: 
+    cmd: >-
+      oc --overwrite=true -n {{ integrations_namespace }} annotate deployment matrix app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"globex-datagrid"}]'
+
+
+# oc -n globex-integrations annotate deployment globex-web app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"globex-support"}]'
+
+# oc -n globex-integrations annotate deployment transcript app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"minio"}]'
+
+# oc -n globex-integrations annotate deployment matrix app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"globex-datagrid"}]'

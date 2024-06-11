@@ -1,8 +1,8 @@
 ---
 
-# - name: "Install Red Hat Web Terminal Operator"
-#   ansible.builtin.import_role:
-#     name: operator_web-terminal
+- name: "Install Red Hat Web Terminal Operator"
+  ansible.builtin.import_role:
+    name: operator_web-terminal
 
 - name: "Install Red Hat Build of Keycloak Operator"
   ansible.builtin.import_role:
