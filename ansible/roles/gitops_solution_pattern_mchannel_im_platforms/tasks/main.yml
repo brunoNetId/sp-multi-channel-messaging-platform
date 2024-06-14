@@ -65,18 +65,35 @@
    - r_secret_kafka.resources is defined
    - r_secret_kafka.resources | length | int > 0
 
+
+- name: "Wait until Rocket.Chat Integration is available."
+  k8s_info:
+    # api_version: camel.apache.org/v1
+    api_version: apps/v1   
+    # kind: Integration
+    kind: Deployment
+    namespace: "{{ im_platforms_namespace }}"
+    name: rocketchat-integration
+  register: r_rocketchat_integration
+  retries: 100
+  delay: 10
+  until:
+   - r_rocketchat_integration.resources is defined
+   - r_rocketchat_integration.resources | length | int > 0
+
+
 - name: Create Rocket.Chat visual connector.
   shell: 
     cmd: >-
-      oc --overwrite=true -n globex-im-platforms annotate deployment rocketchat app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"mongodb-rocketchat"}]'
+      oc --overwrite=true -n {{ im_platforms_namespace }} annotate deployment rocketchat app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"mongodb-rocketchat"}]'
 
 - name: Create Camel visual connectors.
   shell: 
     cmd: >-
-      oc --overwrite=true -n globex-im-platforms annotate integration rocketchat-integration app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"broker-ss"},{"apiVersion":"apps/v1","kind":"Deployment","name":"rocketchat"}]'
+      oc --overwrite=true -n {{ im_platforms_namespace }} annotate integration rocketchat-integration app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"broker-ss"},{"apiVersion":"apps/v1","kind":"Deployment","name":"rocketchat"}]'
 
 - name: Create Element to Matrix connector.
   shell: 
     cmd: >-
-      oc --overwrite=true -n globex-im-platforms annotate deployment element app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"matrix-synapse"}]'
+      oc --overwrite=true -n {{ im_platforms_namespace }} annotate deployment element app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"Deployment","name":"matrix-synapse"}]'
 

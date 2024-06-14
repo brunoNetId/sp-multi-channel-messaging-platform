@@ -107,7 +107,7 @@
   delay: 10
   until:
    - r_transcript is defined
-   # - r_secret_kafka.resources | length | int > 0
+   - r_transcript.resources | length | int > 0
 
 - name: Create Camel Transcript visual connectors.
   shell: 
@@ -125,6 +125,7 @@
   delay: 10
   until:
    - r_matrix is defined
+   - r_matrix.resources | length | int > 0
 
 - name: Create Camel Matrix visual connectors.
   shell: 

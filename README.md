@@ -63,10 +63,10 @@ The instructions below assume:
     git clone https://github.com/brunoNetId/sp-multi-channel-messaging-platform.git
     ```
 
-1. Change to root directory of the project.
+1. Change to the `ansible` directory (in the root project).
 
     ```sh
-    cd sp-multi-channel-messaging-platform
+    cd sp-multi-channel-messaging-platform/ansible
     ```
 
     <br/>
@@ -76,7 +76,7 @@ The instructions below assume:
     1. Configure the `KUBECONFIG` file to use (where kube details are set after login).
 
         ```sh
-        export KUBECONFIG=./ansible/kube-demo
+        export KUBECONFIG=./kube-demo
         ```
 
     1. Login into your OpenShift cluster from the `oc` command line.
@@ -94,9 +94,9 @@ The instructions below assume:
             ```sh
             docker run -i -t --rm --entrypoint /usr/local/bin/ansible-playbook \
             -v $PWD:/runner \
-            -v $PWD/ansible/kube-demo:/home/runner/.kube/config \
+            -v $PWD/kube-demo:/home/runner/.kube/config \
             quay.io/agnosticd/ee-multicloud:v0.0.11  \
-            ./ansible/install.yaml
+            ./playbooks/install.yml
             ```
         
         1. With Podman:
@@ -104,9 +104,9 @@ The instructions below assume:
             ```sh
             podman run -i -t --rm --entrypoint /usr/local/bin/ansible-playbook \
             -v $PWD:/runner \
-            -v $PWD/ansible/kube-demo:/home/runner/.kube/config \
+            -v $PWD/kube-demo:/home/runner/.kube/config \
             quay.io/agnosticd/ee-multicloud:v0.0.11  \
-            ./ansible/install.yaml
+            ./playbooks/install.yml
 
             ```
     <br/>
@@ -121,21 +121,21 @@ The instructions below assume:
         ```
         (Replace the `--server` url with your own cluster API endpoint)
 
-    1. Set the following property:
+    1. Ensure you work from the `ansible` directory:
         ```
-        TARGET_HOST="lab-user@bastion.b9ck5.sandbox1880.opentlc.com"
+        cd ansible
         ```
     2. Run Ansible Playbook
         ```sh
-        ansible-playbook -i $TARGET_HOST,ansible/inventory/openshift.yaml ./ansible/install.yaml
+        ansible-playbook playbooks/install.yml
         ```
 
 <br/>
 
 ### 3. Undeploy the Solution Pattern
 
-If you wish to undeploy the demo, use the same commands as above, but with:
- - `./uninstall.yaml`
+If you wish to undeploy the demo, add the following `ACTION` parameter to the command:
+ - `./playbooks/install.yml -e ACTION=uninstall`
 
-Instead of:
- - ~~`./install.yaml`~~
+Instead of just:
+ - ~~`./playbooks/install.yml`~~
