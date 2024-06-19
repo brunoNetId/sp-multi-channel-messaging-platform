@@ -90,7 +90,7 @@
 - name: Create Camel visual connectors.
   shell: 
     cmd: >-
-      oc --overwrite=true -n {{ im_platforms_namespace }} annotate integration rocketchat-integration app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"broker-ss"},{"apiVersion":"apps/v1","kind":"Deployment","name":"rocketchat"}]'
+      oc --overwrite=true -n {{ im_platforms_namespace }} annotate deployment rocketchat-integration app.openshift.io/connects-to='[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"broker-ss"},{"apiVersion":"apps/v1","kind":"Deployment","name":"rocketchat"}]'
 
 - name: Create Element to Matrix connector.
   shell: 

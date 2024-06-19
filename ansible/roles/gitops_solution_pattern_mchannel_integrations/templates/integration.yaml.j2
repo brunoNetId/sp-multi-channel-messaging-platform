@@ -16,6 +16,7 @@ spec:
   flows:
     - route:
         from:
+          uri: 'direct:cache-put'
           steps:
             - marshal:
                 json: {}
@@ -34,9 +35,9 @@ spec:
                 simple: '${exchangeProperty.key}'
             - to:
                 uri: 'infinispan://default'
-          uri: 'direct:cache-put'
     - route:
         from:
+          uri: 'direct:cache-get'
           steps:
             - removeHeaders:
                 pattern: '*'
@@ -53,9 +54,9 @@ spec:
                 steps:
                   - unmarshal:
                       json: {}
-          uri: 'direct:cache-get'
     - route:
         from:
+          uri: 'direct:cache-remove'
           steps:
             - removeHeaders:
                 pattern: '*'
@@ -67,18 +68,18 @@ spec:
                 simple: '${exchangeProperty.key}'
             - to:
                 uri: 'infinispan://default'
-          uri: 'direct:cache-remove'
     - route:
         from:
+          uri: >-
+            amqp:topic:{{ '{{broker.amqp.topic.clients.globex}}*' }}
           parameters:
             connectionFactory: '#myFactory'
           steps:
             - to:
                 uri: 'direct:support-request'
-          uri: >-
-            amqp:topic:{{ '{{broker.amqp.topic.clients.rocketchat}}*' }}
     - route:
         from:
+          uri: 'direct:support-request'
           steps:
             - unmarshal:
                 json: {}
@@ -98,9 +99,9 @@ spec:
                 simple: '${exchangeProperty.in.get(text)}'
             - to:
                 uri: 'direct:matrix-send-message'
-          uri: 'direct:support-request'
     - route:
         from:
+          uri: 'direct:matrix-send-message'
           steps:
             - setProperty:
                 name: kafka-body
@@ -131,9 +132,9 @@ spec:
             - toD:
                 uri: >-
                   kafka:support.${env.NAMESPACE}.matrix${exchangeProperty.matrix-room.replace(":","-").replace("!","-")}
-          uri: 'direct:matrix-send-message'
     - route:
         from:
+          uri: 'direct:process-agent-message'
           steps:
             - to:
                 uri: 'log:matrix?showBody=true'
@@ -183,9 +184,9 @@ spec:
                       - toD:
                           uri: >-
                             kafka:support.${env.NAMESPACE}.matrix${exchangeProperty.key.replace(":","-").replace("!","-")}
-          uri: 'direct:process-agent-message'
     - route:
         from:
+          uri: 'direct:process-room-leave-event'
           steps:
             - log:
                 message: '${body}'
@@ -218,7 +219,7 @@ spec:
                           name: source
                           simple: '${body.get(source).get(uname)}'
                       - setProperty:
-                          name: key-rocketchat
+                          name: key-user-id
                           simple: '${body.get(source).get(room)}-${body.get(user)}'
                       - setProperty:
                           name: kafka-client
@@ -238,7 +239,7 @@ spec:
                           uri: 'direct:cache-remove'
                       - setProperty:
                           name: key
-                          simple: '${exchangeProperty.key-rocketchat}'
+                          simple: '${exchangeProperty.key-user-id}'
                       - to:
                           uri: 'direct:cache-remove'
                       - setBody:
@@ -253,9 +254,9 @@ spec:
                           simple: '${exchangeProperty.kafka-client}'
                       - toD:
                           uri: 'kafka:support.${env.NAMESPACE}.closed'
-          uri: 'direct:process-room-leave-event'
     - route:
         from:
+          uri: 'timer:trigger-matrix-streaming'
           parameters:
             repeatCount: 1
           steps:
@@ -335,9 +336,9 @@ spec:
                       expression:
                         simple:
                           expression: '${exchangeProperty.backup-response}'
-          uri: 'timer:trigger-matrix-streaming'
     - route:
         from:
+          uri: 'direct:process-matrix-message-event'
           steps:
             - setHeader:
                 expression:
@@ -358,9 +359,9 @@ spec:
                 json: {}
             - wire-tap:
                 uri: 'direct:process-agent-message'
-          uri: 'direct:process-matrix-message-event'
     - route:
         from:
+          uri: 'direct:process-matrix-room-member-leave-event'
           steps:
             - log:
                 message: room member leave event detected
@@ -382,9 +383,9 @@ spec:
                 json: {}
             - to:
                 uri: 'direct:process-room-leave-event'
-          uri: 'direct:process-matrix-room-member-leave-event'
   sources:
-    - content: |-
+    - name: routes-from-amq-support.xml
+      content: |-
         <?xml version="1.0" encoding="UTF-8"?>
         <!-- camel-k: language=xml -->
 
@@ -488,8 +489,8 @@ spec:
             </route>
 
         </routes>
-      name: routes-from-amq-support.xml
-    - content: |
+    - name: CamelJmsConnectionFactory.java
+      content: |
         // camel-k: language=java
 
         import javax.jms.ConnectionFactory;
@@ -534,31 +535,8 @@ spec:
                 return pool;
             }
         }
-      name: CamelJmsConnectionFactory.java
-    - content: |
-        // camel-k: language=java
-
-        import org.apache.camel.builder.RouteBuilder;
-
-        public class GlobexListener extends RouteBuilder {
-
-            @Override
-          public void configure() throws Exception {
-
-
-              String instanceId = System.getenv("NAMESPACE");
-              String amqpUri    = "amqp:topic:{{ '{{broker.amqp.topic.clients.globex}}' }}" + instanceId + "?connectionFactory=#myFactory";
-        
-              // Write your routes here, for example:
-              from(amqpUri)
-                .routeId("amqp-globex-consumer")
-                .log("new GLOBEX message: ${body}")
-                .to("direct:support-request");
-
-          }
-        }
-      name: GlobexListener.java
-    - content: |
+    - name: Infinispan.java
+      content: |
         // camel-k: language=java
 
         import org.apache.camel.builder.RouteBuilder;
@@ -583,7 +561,6 @@ spec:
                 getContext().getRegistry().bind("myCM", remote);
             }
         }
-      name: Infinispan.java
   traits:
     camel:
       properties:
@@ -606,7 +583,6 @@ spec:
           cache.key =
           type:org.apache.camel.component.infinispan.InfinispanConstants.KEY
         - broker.amqp.connections = 5
-        - broker.amqp.topic.clients.rocketchat = support.rocketchat.client.
         - broker.amqp.topic.clients.globex = support.globex.client.
         - broker.amqp.topic.agents = support.
         - 'infinispan.client.hotrod.server_list = globex-datagrid:11222'
@@ -616,7 +592,6 @@ spec:
         - 'secret:client-infinispan'
         - 'secret:client-kafka'
         - 'secret:client-matrix-admin'
-        # - 'configmap:matrix-integration'
       resources:
         - >-
             configmap:matrix-jslt/cachetarget.jslt@/etc/camel/resources/cachetarget.jslt
