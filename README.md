@@ -36,9 +36,7 @@ Head to the Solution Pattern's home page to get the full context of this demo so
 
 1. Provision the following RHDP item:
 
-    * [PENDINIG]
-
-    <!-- * [**Solution Pattern - Edge to Core Data Pipelines for AI/ML**](https://demo.redhat.com/catalog?item=babylon-catalog-prod/community-content.com-edge-to-core.prod&utm_source=webapp&utm_medium=share-link) -->
+    * [**Solution Pattern - Build an extendable Multi-Channel Messaging Platform**](https://demo.redhat.com/catalog?item=babylon-catalog-prod/community-content.com-multi-channel.prod&utm_source=webapp&utm_medium=share-link)
 
    <br/>
 
@@ -87,23 +85,19 @@ The instructions below assume:
 
         Replace the `--server` url with your own cluster API endpoint.
 
+
     1. Run the Playbook with Docker/Podman
-
-
 
         1. First, read the note below:
         
-            > [!IMPORTANT]
-            > If your system is SELinux enabled, you'll need to label the project directory to allow docker/podman to access it. Run the command:
-            > ```sh     
-            > sudo chcon -Rt svirt_sandbox_file_t $PWD
-            > ```
-            > The error you may get if SELinux blocks the process would be similar to:
-            >
-            >     ERROR! the playbook: ./ansible/install.yaml could not be found
-            >
-            
-
+           > [!IMPORTANT]
+           > If your system is SELinux enabled, you'll need to label the project directory to allow docker/podman to access it. Run the command:
+           > ```sh     
+           > sudo chcon -Rt svirt_sandbox_file_t $PWD
+           > ```
+           > The error you may get if SELinux blocks the process would be similar to: \
+           > `ERROR! the playbook: ./ansible/install.yaml could not be found`
+          
 
         1. Then, to run with Docker:
         
