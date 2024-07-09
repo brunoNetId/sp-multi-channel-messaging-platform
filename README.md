@@ -87,9 +87,25 @@ The instructions below assume:
 
         Replace the `--server` url with your own cluster API endpoint.
 
-    1. Run the Playbook
+    1. Run the Playbook with Docker/Podman
 
-        1. With Docker:
+
+
+        1. First, read the note below:
+        
+            > [!IMPORTANT]
+            > If your system is SELinux enabled, you'll need to label the project directory to allow docker/podman to access it. Run the command:
+            > ```sh     
+            > sudo chcon -Rt svirt_sandbox_file_t $PWD
+            > ```
+            > The error you may get if SELinux blocks the process would be similar to:
+            >
+            >     ERROR! the playbook: ./ansible/install.yaml could not be found
+            >
+            
+
+
+        1. Then, to run with Docker:
         
             ```sh
             docker run -i -t --rm --entrypoint /usr/local/bin/ansible-playbook \
@@ -99,7 +115,7 @@ The instructions below assume:
             ./playbooks/install.yml
             ```
         
-        1. With Podman:
+        1. Or, to run with Podman:
         
             ```sh
             podman run -i -t --rm --entrypoint /usr/local/bin/ansible-playbook \
