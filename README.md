@@ -13,9 +13,7 @@ This demo showcases the implementation of a multi-channel support service for Gl
 
 Head to the Solution Pattern's home page to get the full context of this demo sources. You can find it following the link below:
 
-[PENDING]
-
-<!-- - [**Solution Pattern Home Page**](https://redhat-solution-patterns.github.io/solution-pattern-edge-to-cloud-pipelines/solution-pattern-edge-to-core-pipelines/index.html) -->
+- [**Solution Pattern Home Page**](https://www.solutionpatterns.io/solution-pattern-multi-channel-messaging-platform)
 
 
 ## Tested with
