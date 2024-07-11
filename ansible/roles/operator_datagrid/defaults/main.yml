@@ -2,7 +2,7 @@
 
 operator_datagrid_name: datagrid
 operator_datagrid_namespace: openshift-operators
-operator_datagrid_channel: ""
+operator_datagrid_channel: "8.4.x"
 operator_datagrid_automatic_install_plan_approval: true
 operator_datagrid_starting_csv: ""
 operator_datagrid_catalog: redhat-operators
