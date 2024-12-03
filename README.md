@@ -15,15 +15,7 @@ This demo showcases the implementation of a multi-channel support service for Gl
 >
 > As a result, all <i>Camel K</i> instances in this Solution Pattern will transition to the [**Red Hat build of Apache Camel**](https://developers.redhat.com/products/redhat-build-of-apache-camel/overview), aligning with Red Hat's new strategic direction.
 
-<!-- <div style="background: #E7F0FF; border: 1px dashed #4786FF; border-radius: 2px; padding: 1rem; margin-bottom: 1rem">
- <span style="font-weight: bold; color: #4786FF; padding-right: 0.5rem;">ⓘ Note</span>
- 
- </br>
-
-The solution in this repository utilizes integrations based on _Apache Camel K_. While _Camel K_ is still active within upstream _Apache Camel_, Red Hat has shifted its support to a cloud-native approach, focusing on [_Camel JBang_](https://camel.apache.org/manual/camel-jbang.html) and [_Kaoto_](https://kaoto.io) as primary development tools.
-
-As a result, all <i>Camel K</i> instances in this Solution Pattern will transition to the [**Red Hat build of Apache Camel**](https://developers.redhat.com/products/redhat-build-of-apache-camel/overview), aligning with Red Hat's new strategic direction.
-</div> -->
+<br>
 
 ## Home page
 
